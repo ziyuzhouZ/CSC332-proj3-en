@@ -1,0 +1,128 @@
+<!-- Order List Page -->
+<div class="orders-container">
+    <!-- Order Filters -->
+    <div class="orders-filter">
+        <div class="filter-tabs">
+            <button class="tab-item active" data-status="all">All Orders</button>
+            <button class="tab-item" data-status="pending">Pending Payment</button>
+            <button class="tab-item" data-status="processing">Processing</button>
+            <button class="tab-item" data-status="shipped">Shipped</button>
+            <button class="tab-item" data-status="completed">Completed</button>
+            <button class="tab-item" data-status="cancelled">Cancelled</button>
+        </div>
+
+        <div class="filter-actions">
+            <div class="search-box">
+                <input type="text" id="orderSearch" placeholder="Search by order number">
+                <button class="btn-search">
+                    <i class="icon-search"></i>
+                </button>
+            </div>
+
+            <div class="date-filter">
+                <input type="date" id="startDate">
+                <span>to</span>
+                <input type="date" id="endDate">
+            </div>
+        </div>
+    </div>
+
+    <!-- Order List -->
+    <div class="orders-list">
+        <!-- Order Item Template -->
+        <template id="orderTemplate">
+            <div class="order-item">
+                <div class="order-header">
+                    <div class="order-info">
+                        <span class="order-time"></span>
+                        <span class="order-number"></span>
+                    </div>
+                    <div class="order-status"></div>
+                </div>
+
+                <div class="order-content">
+                    <div class="product-list">
+                        <!-- Products will be dynamically inserted -->
+                    </div>
+                    <div class="order-summary">
+                        <div class="price-info">
+                            <span><span class="product-count"></span> items</span>
+                            <span>Total: <span class="total-price"></span></span>
+                        </div>
+                        <div class="order-actions">
+                            <!-- Buttons will be dynamically displayed based on order status -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Order list will be dynamically loaded -->
+        <div id="ordersList"></div>
+
+        <!-- Load More -->
+        <div class="load-more" id="loadMore" hidden>
+            <button class="btn-load-more">
+                <span>Load More</span>
+                <div class="loading-spinner"></div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" hidden>
+        <img src="../../public/images/empty-orders.svg" alt="No Orders">
+        <p>No orders found</p>
+        <a href="../shop.html" class="btn-primary">Go Shopping</a>
+    </div>
+</div>
+
+<!-- Cancel Order Confirmation Modal -->
+<div class="modal" id="cancelModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Cancel Order</h3>
+            <button class="btn-close" id="closeCancelModal">×</button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to cancel this order? This action cannot be undone.</p>
+            <div class="form-group">
+                <label for="cancelReason">Reason for Cancellation</label>
+                <select id="cancelReason">
+                    <option value="">Please select a reason</option>
+                    <option value="wrong_info">Incorrect information</option>
+                    <option value="change_mind">Changed my mind</option>
+                    <option value="stock_issue">Out of stock</option>
+                    <option value="other">Other reason</option>
+                </select>
+            </div>
+            <div class="form-group" id="otherReasonGroup" hidden>
+                <label for="otherReason">Other Reason</label>
+                <textarea id="otherReason" rows="3" placeholder="Please enter your reason"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="cancelCancelBtn">Cancel</button>
+            <button class="btn-primary" id="confirmCancelBtn">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Review Order Modal -->
+<div class="modal" id="reviewModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Review Order</h3>
+            <button class="btn-close" id="closeReviewModal">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="review-products">
+                <!-- Product review forms will be dynamically inserted -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="cancelReviewBtn">Cancel</button>
+            <button class="btn-primary" id="submitReviewBtn">Submit Review</button>
+        </div>
+    </div>
+</div>

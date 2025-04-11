@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Management - Fashion Store</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/pages/admin.css">
+    <script src="../../js/api/admin/auth-interceptor.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="logo">
+                <img src="../../public/images/icons/logo.png" alt="Fashion Store">
+            </div>
+            <ul>
+                <li><a href="dashboard.html"><i class="icon-dashboard"></i> Dashboard</a></li>
+                <li class="active"><a href="stores.html"><i class="icon-store"></i> Stores</a></li>
+                <li><a href="sales.html"><i class="icon-chart"></i> Sales</a></li>
+                <li><a href="orders.html"><i class="icon-orders"></i> Orders</a></li>
+                <div class="divider"></div>
+                <li><a href="../index.html"><i class="icon-storefront"></i> Visit Store</a></li>
+                <li><a href="#" id="logoutBtn"><i class="icon-logout"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="admin-content">
+            <h1>Store Management</h1>
+            
+            <!-- Filter Area -->
+            <div class="filter-bar">
+                <input type="text" id="storeSearch" placeholder="Search store name...">
+                <select id="sortBy">
+                    <option value="name">Sort by Name</option>
+                    <option value="inventory">Sort by Inventory</option>
+                    <option value="sales">Sort by Sales</option>
+                </select>
+                <button type="button" id="addStoreBtn">Add New Store</button>
+            </div>
+            
+            <!-- Store List -->
+            <div class="admin-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Store Name</th>
+                            <th>Address</th>
+                            <th>Total Inventory</th>
+                            <th>Today's Sales</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="storesTable">
+                        <tr>
+                            <td colspan="5">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getStores } from '../../js/modules/auth/api.js';
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Admin permission check disabled
+            // if (!isAdmin()) {
+            //     window.location.href = './login.html';
+            //     return;
+            // }
+            
+            // Bind logout button
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_data');
+                window.location.href = 'login.html';
+            });
+            
+            // Bind search input event
+            document.getElementById('storeSearch').addEventListener('input', function() {
+                filterStores();
+            });
+            
+            // Bind sort select event
+            document.getElementById('sortBy').addEventListener('change', function() {
+                sortStores();
+            });
+            
+            // Store all store data
+            let allStores = [];
+            
+            try {
+                // Load store data
+                const storesData = await getStores();
+                if (storesData.success && storesData.stores) {
+                    allStores = storesData.stores;
+                    renderStoresTable(allStores);
+                } else {
+                    throw new Error('Failed to fetch store data');
+                }
+            } catch (error) {
+                console.error('Error loading store data:', error);
+                document.getElementById('storesTable').innerHTML = `
+                    <tr>
+                        <td colspan="5">Error loading data, please refresh the page</td>
+                    </tr>
+                `;
+            }
+            
+            // Filter stores
+            function filterStores() {
+                const searchText = document.getElementById('storeSearch').value.toLowerCase();
+                
+                if (!searchText.trim()) {
+                    sortStores(allStores);
+                    return;
+                }
+                
+                const filteredStores = allStores.filter(store => 
+                    store.name.toLowerCase().includes(searchText) || 
+                    store.address.toLowerCase().includes(searchText) ||
+                    store.city.toLowerCase().includes(searchText) ||
+                    store.province.toLowerCase().includes(searchText)
+                );
+                
+                sortStores(filteredStores);
+            }
+            
+            // Sort stores
+            function sortStores(stores = null) {
+                const sortBy = document.getElementById('sortBy').value;
+                const storesToSort = stores || [...allStores];
+                
+                if (sortBy === 'name') {
+                    storesToSort.sort((a, b) => a.name.localeCompare(b.name));
+                } else if (sortBy === 'inventory') {
+                    storesToSort.sort((a, b) => (b.total_inventory || 0) - (a.total_inventory || 0));
+                } else if (sortBy === 'sales') {
+                    storesToSort.sort((a, b) => (b.today_sales || 0) - (a.today_sales || 0));
+                }
+                
+                renderStoresTable(storesToSort);
+            }
+            
+            // Render stores table
+            function renderStoresTable(stores) {
+                const tbody = document.getElementById('storesTable');
+                
+                if (stores.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5">No store data available</td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tbody.innerHTML = stores.map(store => {
+                    const address = `${store.address}, ${store.city}, ${store.province} ${store.zipcode}`;
+                    
+                    return `
+                        <tr>
+                            <td>${store.name}</td>
+                            <td>${address}</td>
+                            <td>${store.total_inventory || 0}</td>
+                            <td>¥${(store.today_sales || 0).toLocaleString()}</td>
+                            <td class="actions">
+                                <button onclick="location.href='store-detail.html?id=${store.id}'">
+                                    View Details
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        });
+    </script>
+</body>
+</html> 

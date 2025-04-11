@@ -1,0 +1,155 @@
+<!-- Order Details Page -->
+<div class="order-detail-container">
+    <!-- Order Status Card -->
+    <div class="detail-card status-card">
+        <div class="status-header">
+            <div class="status-info">
+                <i class="icon-status"></i>
+                <div class="status-text">
+                    <h3>Order Status</h3>
+                    <p class="status-desc"></p>
+                </div>
+            </div>
+            <div class="status-actions">
+                <!-- Action buttons will be dynamically displayed based on order status -->
+            </div>
+        </div>
+        
+        <!-- Shipping Progress -->
+        <div class="logistics-progress" hidden>
+            <div class="progress-track">
+                <div class="progress-bar"></div>
+                <div class="progress-nodes">
+                    <!-- Shipping nodes will be dynamically generated -->
+                </div>
+            </div>
+            <div class="logistics-detail">
+                <!-- Shipping details will be dynamically generated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Information Card -->
+    <div class="detail-card info-card">
+        <h3>Order Information</h3>
+        <div class="info-list">
+            <div class="info-item">
+                <span class="info-label">Order Number:</span>
+                <span class="order-number"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Created On:</span>
+                <span class="create-time"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Payment Method:</span>
+                <span class="payment-method"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Payment Time:</span>
+                <span class="payment-time"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shipping Information Card -->
+    <div class="detail-card delivery-card">
+        <h3>Shipping Information</h3>
+        <div class="info-list">
+            <div class="info-item">
+                <span class="info-label">Recipient:</span>
+                <span class="receiver-name"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Phone:</span>
+                <span class="receiver-phone"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Address:</span>
+                <span class="receiver-address"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product List Card -->
+    <div class="detail-card products-card">
+        <h3>Product List</h3>
+        <div class="product-list">
+            <!-- Product list will be dynamically generated -->
+        </div>
+        <div class="order-summary">
+            <div class="summary-item">
+                <span>Product Total</span>
+                <span class="products-total"></span>
+            </div>
+            <div class="summary-item">
+                <span>Shipping Fee</span>
+                <span class="shipping-fee"></span>
+            </div>
+            <div class="summary-item">
+                <span>Discount</span>
+                <span class="discount-amount"></span>
+            </div>
+            <div class="summary-item total">
+                <span>Total Payment</span>
+                <span class="payment-total"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Order Confirmation Modal -->
+<div class="modal" id="cancelModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Cancel Order</h3>
+            <button class="btn-close" id="closeCancelModal">×</button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to cancel this order? This action cannot be undone.</p>
+            <div class="form-group">
+                <label for="cancelReason">Reason for Cancellation</label>
+                <select id="cancelReason">
+                    <option value="">Please select a reason</option>
+                    <option value="wrong_info">Incorrect information</option>
+                    <option value="change_mind">Changed my mind</option>
+                    <option value="stock_issue">Out of stock</option>
+                    <option value="other">Other reason</option>
+                </select>
+            </div>
+            <div class="form-group" id="otherReasonGroup" hidden>
+                <label for="otherReason">Other Reason</label>
+                <textarea id="otherReason" rows="3" placeholder="Please enter your reason"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="cancelCancelBtn">Cancel</button>
+            <button class="btn-primary" id="confirmCancelBtn">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Shipping Details Modal -->
+<div class="modal" id="logisticsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Shipping Details</h3>
+            <button class="btn-close" id="closeLogisticsModal">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="logistics-info">
+                <div class="info-item">
+                    <span class="info-label">Shipping Company:</span>
+                    <span class="company-name"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Tracking Number:</span>
+                    <span class="tracking-number"></span>
+                </div>
+            </div>
+            <div class="logistics-timeline">
+                <!-- Shipping timeline will be dynamically generated -->
+            </div>
+        </div>
+    </div>
+</div>

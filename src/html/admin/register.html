@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Registration - Fashion Store</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/pages/auth.css">
+    <style>
+        /* Admin registration specific styles */
+        .admin-login-bg {
+            background: linear-gradient(135deg, #1a1a1a, #3a3a3a);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 30px 0;
+        }
+        
+        .admin-card {
+            background: #fff;
+            width: 450px;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .admin-card .logo {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .admin-card .logo::after {
+            content: 'Admin Panel';
+            position: absolute;
+            top: 50%;
+            right: 60px;
+            transform: translateY(-50%);
+            background: #ff4f4f;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .admin-card .logo img {
+            max-width: 150px;
+        }
+        
+        .admin-card h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            color: #1a1a1a;
+        }
+        
+        .admin-form .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .admin-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .admin-form input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .admin-form input:focus {
+            border-color: #1a1a1a;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.1);
+        }
+        
+        .btn-admin {
+            width: 100%;
+            padding: 12px;
+            background-color: #1a1a1a;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .btn-admin:hover {
+            background-color: #333;
+        }
+        
+        .error-message {
+            color: #ff4f4f;
+            font-size: 14px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message {
+            color: #4CAF50;
+            font-size: 14px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .admin-links {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .admin-links a {
+            color: #ff4f4f;
+            text-decoration: none;
+        }
+        
+        .admin-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .invite-code-notice {
+            background-color: #fff8e6;
+            border-left: 4px solid #ffcc00;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+        
+        .invite-code-notice strong {
+            color: #e6a700;
+        }
+    </style>
+</head>
+<body class="admin-login-bg">
+    <div class="admin-card">
+        <div class="logo">
+            <img src="../../public/images/icons/logo.png" alt="Fashion Store">
+        </div>
+        <h1>Admin One-Time Registration</h1>
+        
+        <div class="invite-code-notice">
+            <strong>Important Notice:</strong> Admin registration requires an invitation code. Please contact an existing admin to obtain an invitation code. The invitation code will be invalidated after use.
+        </div>
+        
+        <form id="adminRegisterForm" class="admin-form">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required minlength="8">
+            </div>
+            
+            <div class="input-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="inviteCode">Invitation Code</label>
+                <input type="text" id="inviteCode" name="inviteCode" required>
+            </div>
+            
+            <button type="submit" class="btn-admin">
+                <span>Register</span>
+                <div class="loading-spinner"></div>
+            </button>
+            
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+            
+            <div class="admin-links">
+                <a href="login.html">Back to Login</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.getElementById('adminRegisterForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            const inviteCodeField = document.getElementById('inviteCode');
+            
+            // Hardcoded invitation code validation value
+            const VALID_INVITE_CODE = '6666';
+            
+            // Check if already logged in
+            const token = localStorage.getItem('admin_token');
+            if (token) {
+                // Already logged in, redirect to admin dashboard
+                window.location.href = 'dashboard.html';
+            }
+            
+            // Invitation code input validation
+            inviteCodeField.addEventListener('blur', function() {
+                if (inviteCodeField.value && inviteCodeField.value !== VALID_INVITE_CODE) {
+                    showError('Invalid invitation code');
+                } else {
+                    hideMessages();
+                }
+            });
+            
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const inviteCode = document.getElementById('inviteCode').value;
+                
+                // Validate form
+                if (!username || !email || !password || !confirmPassword || !inviteCode) {
+                    showError('Please fill in all fields');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    showError('Passwords do not match');
+                    return;
+                }
+                
+                if (password.length < 8) {
+                    showError('Password must be at least 8 characters long');
+                    return;
+                }
+                
+                if (inviteCode !== VALID_INVITE_CODE) {
+                    showError('Invalid invitation code');
+                    return;
+                }
+                
+                // Show loading spinner
+                loadingSpinner.style.display = 'block';
+                registerForm.querySelector('button[type="submit"]').disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    // Create admin data
+                    const adminData = {
+                        username: username,
+                        email: email,
+                        token: 'admin_token_' + Math.random().toString(36).substring(2)
+                    };
+                    
+                    // Save to localStorage
+                    localStorage.setItem('admin_token', adminData.token);
+                    localStorage.setItem('admin_data', JSON.stringify(adminData));
+                    
+                    // Show success message
+                    showSuccess('Registration successful! Redirecting...');
+                    
+                    // Redirect to dashboard after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 2000);
+                }, 1500);
+            });
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            }
+            
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+            
+            function hideMessages() {
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html> 

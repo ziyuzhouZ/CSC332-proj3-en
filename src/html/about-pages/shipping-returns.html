@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipping & Returns Policy - Fashion Store</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/components/navbar.css">
+    <link rel="stylesheet" href="../../css/pages/about.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="navbar-left">
+                <button class="menu-toggle" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../shop.html">Shop</a></li>
+                    <li class="active"><a href="brand-story.html">About</a></li>
+                </ul>
+            </div>
+            
+            <div class="navbar-center">
+                <a href="../index.html" class="logo">FASHION</a>
+            </div>
+            
+            <div class="navbar-right">
+                <div class="nav-icons">
+                    <a href="../user-center.html" class="icon-link">
+                        <img src="../../public/images/icons/user.svg" alt="User Center" class="icon">
+                    </a>
+                    <a href="#" class="icon-link cart-icon">
+                        <img src="../../public/images/icons/cart.svg" alt="Shopping Cart" class="icon">
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="about-container">
+        <h1 class="page-title">Shipping & Returns Policy</h1>
+        <div class="content-wrapper">
+            <section>
+                <h2>Shipping Service</h2>
+                <div class="process-flow">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <h3>Order Confirmation</h3>
+                        <p>Confirmed within 24 hours after payment</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <h3>Product Dispatch</h3>
+                        <p>Packed and shipped within 48 hours</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <h3>Express Delivery</h3>
+                        <p>Delivered within 3-5 business days</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">4</div>
+                        <h3>Delivery Completion</h3>
+                        <p>Order completed upon receipt confirmation</p>
+                    </div>
+                </div>
+
+                <div class="shipping-info">
+                    <h3>Shipping Information</h3>
+                    <ul>
+                        <li><span class="highlight">Free shipping for orders over ¥299</span>, ¥10 flat rate for orders below ¥299</li>
+                        <li>Supported by SF Express, ZTO Express, YTO Express, and other courier services</li>
+                        <li>Remote areas may require additional 2-3 days for delivery</li>
+                        <li>Delivery times may be extended during holidays, subject to actual notifications</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>Returns Policy</h2>
+                <div class="return-policy">
+                    <h3>Return Conditions</h3>
+                    <ul>
+                        <li><span class="highlight">7-day no-reason return</span> (items unworn, unwashed, with tags intact)</li>
+                        <li>Quality issues, <span class="highlight">15-day return window</span></li>
+                        <li>Returns accepted for items that don't match the order</li>
+                        <li>Special items like discounted or custom products are not eligible for no-reason returns</li>
+                    </ul>
+
+                    <h3>Return Process</h3>
+                    <ol>
+                        <li>Submit return request online, state reason and upload product photos</li>
+                        <li>Customer service will process within 1-2 business days</li>
+                        <li>After approval, return items to provided address</li>
+                        <li>Refund processed within 3-5 business days after warehouse confirmation</li>
+                    </ol>
+
+                    <div class="warning-box">
+                        <h3>Important Notes</h3>
+                        <ul>
+                            <li>Returned items must maintain original packaging and tags</li>
+                            <li>Return shipping covered by us for quality issues, otherwise by customer</li>
+                            <li>SF Express recommended for returns to ensure item safety</li>
+                        </ul>
+                    </div>
+
+                    <a href="#" class="return-form-btn">Request Return</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About Us</h4>
+                <ul>
+                    <li><a href="brand-story.html">Brand Story</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Join Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Customer Service</h4>
+                <ul>
+                    <li><a href="product-care.html">Product Care</a></li>
+                    <li><a href="shipping-returns.html">Returns Policy</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#" aria-label="WeChat">WeChat</a>
+                    <a href="#" aria-label="Weibo">Weibo</a>
+                    <a href="#" aria-label="TikTok">TikTok</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Fashion Store. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="../../js/main.js"></script>
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

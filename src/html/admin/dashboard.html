@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Fashion Store</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/pages/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Admin authentication interceptor -->
+    <script src="../../js/api/admin/auth-interceptor.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="logo">
+                <img src="../../public/images/icons/logo.png" alt="Fashion Store">
+            </div>
+            <ul>
+                <li class="active"><a href="dashboard.html"><i class="icon-dashboard"></i> Dashboard</a></li>
+                <li><a href="stores.html"><i class="icon-store"></i> Stores</a></li>
+                <li><a href="sales.html"><i class="icon-chart"></i> Sales</a></li>
+                <li><a href="orders.html"><i class="icon-orders"></i> Orders</a></li>
+                <div class="divider"></div>
+                <li><a href="../index.html"><i class="icon-storefront"></i> Visit Store</a></li>
+                <li><a href="#" id="logoutBtn"><i class="icon-logout"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="admin-content">
+            <h1>Dashboard</h1>
+            <p class="admin-header-meta">Welcome, Admin <span id="adminName">Loading...</span></p>
+            
+            <!-- Overview Cards -->
+            <div class="dashboard-cards">
+                <div class="dashboard-card" onclick="location.href='stores.html'">
+                    <div class="card-icon stores">
+                        <i class="icon-store"></i>
+                    </div>
+                    <h3>Stores</h3>
+                    <div class="card-value" id="totalStores">-</div>
+                    <div class="card-meta">Total Stores</div>
+                </div>
+                
+                <div class="dashboard-card" onclick="location.href='sales.html'">
+                    <div class="card-icon sales">
+                        <i class="icon-chart"></i>
+                    </div>
+                    <h3>Sales</h3>
+                    <div class="card-value" id="totalSales">-</div>
+                    <div class="card-meta">30-Day Sales Total</div>
+                </div>
+                
+                <div class="dashboard-card" onclick="location.href='orders.html'">
+                    <div class="card-icon orders">
+                        <i class="icon-orders"></i>
+                    </div>
+                    <h3>Orders</h3>
+                    <div class="card-value" id="pendingOrders">-</div>
+                    <div class="card-meta">Pending Orders</div>
+                </div>
+            </div>
+            
+            <!-- Recent Sales Trend Chart -->
+            <h2>Recent Sales Trend</h2>
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+            </div>
+            
+            <!-- Top Selling Products -->
+            <h2>Top Selling Products TOP 5</h2>
+            <div class="admin-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Quantity Sold</th>
+                            <th>Sales Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topProductsTable">
+                        <tr>
+                            <td colspan="3">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Latest Orders -->
+            <h2>Latest Orders</h2>
+            <div class="admin-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="latestOrdersTable">
+                        <tr>
+                            <td colspan="5">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getSession, isAdmin, getStores, getSales, getOrders } from '../../js/modules/auth/api.js';
+        import { logout } from '../../js/modules/auth/session.js';
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Admin permission check disabled
+            // if (!isAdmin()) {
+            //     window.location.href = './login.html';
+            //     return;
+            // }
+            
+            // Display admin name
+            const adminData = JSON.parse(localStorage.getItem('admin_data') || '{"username":"Admin"}');
+            document.getElementById('adminName').textContent = adminData.username || 'Admin';
+            
+            // Bind logout button
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_data');
+                window.location.href = 'login.html';
+            });
+            
+            try {
+                // Load store data
+                const storesData = await getStores();
+                if (storesData.success) {
+                    document.getElementById('totalStores').textContent = storesData.stores.length;
+                }
+                
+                // Load sales data
+                const salesData = await getSales('month');
+                if (salesData.success) {
+                    // Display total sales
+                    const totalSales = salesData.salesData.reduce((sum, data) => sum + data.total_sales, 0);
+                    document.getElementById('totalSales').textContent = `¥${totalSales.toLocaleString()}`;
+                    
+                    // Render sales trend chart
+                    renderSalesChart(salesData.salesData);
+                    
+                    // Render top products table
+                    renderTopProducts(salesData.topProducts.slice(0, 5));
+                }
+                
+                // Load order data
+                const ordersData = await getOrders('pending');
+                if (ordersData.success) {
+                    document.getElementById('pendingOrders').textContent = ordersData.pagination.total;
+                    
+                    // Render latest orders table
+                    renderLatestOrders(ordersData.orders.slice(0, 5));
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        });
+        
+        // Render sales trend chart
+        function renderSalesChart(salesData) {
+            const labels = salesData.map(data => data.period);
+            const values = salesData.map(data => data.total_sales);
+            
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sales Amount (¥)',
+                        data: values,
+                        backgroundColor: 'rgba(255, 79, 79, 0.1)',
+                        borderColor: '#ff4f4f',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Render top products table
+        function renderTopProducts(products) {
+            const tbody = document.getElementById('topProductsTable');
+            
+            if (products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3">No data available</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = products.map(product => `
+                <tr>
+                    <td>${product.name}</td>
+                    <td>${product.total_quantity}</td>
+                    <td>¥${product.total_amount.toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+        
+        // Render latest orders table
+        function renderLatestOrders(orders) {
+            const tbody = document.getElementById('latestOrdersTable');
+            
+            if (orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">No data available</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = orders.map(order => {
+                const date = new Date(order.created_at);
+                const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                
+                return `
+                    <tr>
+                        <td>${order.id}</td>
+                        <td>${order.customer_name || 'Guest User'}</td>
+                        <td>¥${order.total_amount.toLocaleString()}</td>
+                        <td>${formattedDate}</td>
+                        <td>
+                            <span class="status-${order.status.toLowerCase()}">
+                                ${order.status}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>

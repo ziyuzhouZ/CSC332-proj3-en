@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustainability - Fashion Store</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/components/navbar.css">
+    <link rel="stylesheet" href="../../css/pages/about.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="navbar-left">
+                <button class="menu-toggle" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../shop.html">Shop</a></li>
+                    <li class="active"><a href="brand-story.html">About</a></li>
+                </ul>
+            </div>
+            
+            <div class="navbar-center">
+                <a href="../index.html" class="logo">FASHION</a>
+            </div>
+            
+            <div class="navbar-right">
+                <div class="nav-icons">
+                    <a href="../user-center.html" class="icon-link">
+                        <img src="../../public/images/icons/user.svg" alt="User Center" class="icon">
+                    </a>
+                    <a href="#" class="icon-link cart-icon">
+                        <img src="../../public/images/icons/cart.svg" alt="Shopping Cart" class="icon">
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="about-container">
+        <h1 class="page-title">Sustainability</h1>
+        <div class="content-wrapper">
+            <section class="eco-intro">
+                <h2>Our Environmental Commitment</h2>
+                <p>Fashion Store is dedicated to contributing to the future of our planet through sustainable business practices. We believe that the fashion industry can provide quality products while protecting the environment.</p>
+            </section>
+
+            <section class="eco-dashboard">
+                <div class="eco-stat">
+                    <div class="stat-number" data-value="85">0</div>
+                    <p>Products using eco-friendly materials</p>
+                </div>
+                <div class="eco-stat">
+                    <div class="stat-number" data-value="50000">0</div>
+                    <p>Annual clothing items recycled</p>
+                </div>
+                <div class="eco-stat">
+                    <div class="stat-number" data-value="30">0</div>
+                    <p>Carbon emission reduction percentage</p>
+                </div>
+            </section>
+
+            <section class="eco-initiatives">
+                <h2>Environmental Initiatives</h2>
+                <ul class="eco-checklist">
+                    <li>Use of organic cotton and recycled materials</li>
+                    <li>100% biodegradable packaging materials</li>
+                    <li>Implementation of clothing recycling program</li>
+                    <li>Factory energy-saving and emission reduction upgrades</li>
+                    <li>Transparent supply chain management</li>
+                    <li>Support for environmental public welfare projects</li>
+                </ul>
+            </section>
+
+            <section class="partners">
+                <h2>Partners</h2>
+                <div class="partners-grid">
+                    <div class="partner-logo">
+                        <img src="../../public/images/partners/partner1.png" alt="Environmental Certification Agency" loading="lazy">
+                    </div>
+                    <div class="partner-logo">
+                        <img src="../../public/images/partners/partner2.png" alt="Organic Cotton Association" loading="lazy">
+                    </div>
+                    <div class="partner-logo">
+                        <img src="../../public/images/partners/partner3.png" alt="Recycled Materials Alliance" loading="lazy">
+                    </div>
+                    <div class="partner-logo">
+                        <img src="../../public/images/partners/partner4.png" alt="Sustainable Fashion Association" loading="lazy">
+                    </div>
+                    <div class="partner-logo">
+                        <img src="../../public/images/partners/partner5.png" alt="Environmental Foundation" loading="lazy">
+                    </div>
+                    <div class="partner-logo">
+                        <img src="../../public/images/partners/partner6.png" alt="Carbon Neutral Alliance" loading="lazy">
+                    </div>
+                </div>
+            </section>
+
+            <section class="join-us">
+                <h2>Join Our Environmental Movement</h2>
+                <p>Every small change can make a big impact. Let's work together for a sustainable future.</p>
+                <div class="eco-actions">
+                    <div class="action-card">
+                        <h3>Clothing Recycling</h3>
+                        <p>Recycle old clothes at our stores and receive shopping vouchers</p>
+                    </div>
+                    <div class="action-card">
+                        <h3>Eco-friendly Packaging</h3>
+                        <p>Choose minimal packaging to reduce unnecessary materials</p>
+                    </div>
+                    <div class="action-card">
+                        <h3>Green Logistics</h3>
+                        <p>Support eco-friendly delivery to reduce carbon emissions</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About Us</h4>
+                <ul>
+                    <li><a href="brand-story.html">Brand Story</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Join Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Customer Service</h4>
+                <ul>
+                    <li><a href="product-care.html">Product Care</a></li>
+                    <li><a href="shipping-returns.html">Returns Policy</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#" aria-label="WeChat">WeChat</a>
+                    <a href="#" aria-label="Weibo">Weibo</a>
+                    <a href="#" aria-label="TikTok">TikTok</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Fashion Store. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="../../js/main.js"></script>
+    <script>
+        // Number animation
+        function animateNumber(element, target, duration = 2000) {
+            const start = parseInt(element.textContent);
+            const increment = target / (duration / 16);
+            let current = start;
+
+            const animate = () => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target;
+                    return;
+                }
+                element.textContent = Math.floor(current);
+                requestAnimationFrame(animate);
+            };
+
+            animate();
+        }
+
+        // Observer trigger animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.dataset.value);
+                    animateNumber(entry.target, target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+
+        document.querySelectorAll('.stat-number').forEach(stat => {
+            observer.observe(stat);
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

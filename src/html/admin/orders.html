@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management - Fashion Store</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/pages/admin.css">
+    <script src="../../js/api/admin/auth-interceptor.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="logo">
+                <img src="../../public/images/icons/logo.png" alt="Fashion Store">
+            </div>
+            <ul>
+                <li><a href="dashboard.html"><i class="icon-dashboard"></i> Dashboard</a></li>
+                <li><a href="stores.html"><i class="icon-store"></i> Stores</a></li>
+                <li><a href="sales.html"><i class="icon-chart"></i> Sales</a></li>
+                <li class="active"><a href="orders.html"><i class="icon-orders"></i> Orders</a></li>
+                <div class="divider"></div>
+                <li><a href="../index.html"><i class="icon-storefront"></i> Visit Store</a></li>
+                <li><a href="#" id="logoutBtn"><i class="icon-logout"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="admin-content">
+            <div class="admin-header">
+                <h1>Order Management</h1>
+                <p class="admin-header-meta">Manage all order statuses and details</p>
+            </div>
+            
+            <!-- Order Type Tabs -->
+            <div class="tab-nav">
+                <button id="tab-pending" class="active">Pending Orders</button>
+                <button id="tab-shipped">Shipped Orders</button>
+                <button id="tab-completed">Completed Orders</button>
+            </div>
+            
+            <!-- Filter and Search -->
+            <div class="filter-bar">
+                <input type="text" id="orderSearch" placeholder="Search by order ID or customer name...">
+                <select id="sortOrders">
+                    <option value="date_desc">Newest First</option>
+                    <option value="date_asc">Oldest First</option>
+                    <option value="amount_desc">Amount High to Low</option>
+                    <option value="amount_asc">Amount Low to High</option>
+                </select>
+                <button id="exportBtn" class="secondary">Export Orders</button>
+            </div>
+            
+            <!-- Pending Orders -->
+            <div id="content-pending" class="tab-content active">
+                <div class="admin-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer Name</th>
+                                <th>Amount</th>
+                                <th>Items</th>
+                                <th>Order Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingOrdersTable">
+                            <tr>
+                                <td colspan="6">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination" id="pending-pagination"></div>
+            </div>
+            
+            <!-- Shipped Orders -->
+            <div id="content-shipped" class="tab-content">
+                <div class="admin-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer Name</th>
+                                <th>Amount</th>
+                                <th>Items</th>
+                                <th>Shipping Time</th>
+                                <th>Tracking Number</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shippedOrdersTable">
+                            <tr>
+                                <td colspan="7">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination" id="shipped-pagination"></div>
+            </div>
+            
+            <!-- Completed Orders -->
+            <div id="content-completed" class="tab-content">
+                <div class="admin-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer Name</th>
+                                <th>Amount</th>
+                                <th>Items</th>
+                                <th>Completion Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="completedOrdersTable">
+                            <tr>
+                                <td colspan="6">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination" id="completed-pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getOrders } from '../../js/modules/auth/api.js';
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Admin permission check disabled
+            // if (!isAdmin()) {
+            //     window.location.href = './login.html';
+            //     return;
+            // }
+            
+            // Bind logout button
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_data');
+                window.location.href = 'login.html';
+            });
+            
+            // Tab switching
+            document.querySelectorAll('.tab-nav button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active state from all tabs
+                    document.querySelectorAll('.tab-nav button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Hide all content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Activate current tab
+                    this.classList.add('active');
+                    
+                    // Show corresponding content
+                    const contentId = 'content-' + this.id.split('-')[1];
+                    document.getElementById(contentId).classList.add('active');
+                    
+                    // Load order data for the selected tab
+                    const status = this.id.split('-')[1];
+                    loadOrders(status, 1);
+                });
+            });
+            
+            // Search and sort binding
+            document.getElementById('orderSearch').addEventListener('input', function() {
+                const activeTab = document.querySelector('.tab-nav button.active').id.split('-')[1];
+                loadOrders(activeTab, 1);
+            });
+            
+            document.getElementById('sortOrders').addEventListener('change', function() {
+                const activeTab = document.querySelector('.tab-nav button.active').id.split('-')[1];
+                loadOrders(activeTab, 1);
+            });
+            
+            // Export button
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                alert('Order export feature coming soon');
+            });
+            
+            // Initial load of pending orders
+            loadOrders('pending', 1);
+            
+            // Load order data
+            async function loadOrders(status, page) {
+                try {
+                    // Get search and sort conditions
+                    const searchText = document.getElementById('orderSearch').value.trim();
+                    const sortOption = document.getElementById('sortOrders').value;
+                    
+                    const data = await getOrders(status, page, 20);
+                    
+                    if (!data.success) {
+                        throw new Error('Failed to fetch order data');
+                    }
+                    
+                    // Filter by search text
+                    let orders = data.orders;
+                    if (searchText) {
+                        orders = orders.filter(order => 
+                            order.id.toString().includes(searchText) || 
+                            (order.customer_name && order.customer_name.toLowerCase().includes(searchText.toLowerCase()))
+                        );
+                    }
+                    
+                    // Sort orders
+                    sortOrders(orders, sortOption);
+                    
+                    // Render order table
+                    renderOrdersTable(status, orders);
+                    
+                    // Render pagination
+                    renderPagination(status, data.pagination, page);
+                    
+                } catch (error) {
+                    console.error('Error loading order data:', error);
+                    document.getElementById(`${status}OrdersTable`).innerHTML = `
+                        <tr>
+                            <td colspan="7">Error loading data, please refresh the page</td>
+                        </tr>
+                    `;
+                }
+            }
+            
+            // Sort orders
+            function sortOrders(orders, sortOption) {
+                switch (sortOption) {
+                    case 'date_desc':
+                        orders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                        break;
+                    case 'date_asc':
+                        orders.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                        break;
+                    case 'amount_desc':
+                        orders.sort((a, b) => b.total_amount - a.total_amount);
+                        break;
+                    case 'amount_asc':
+                        orders.sort((a, b) => a.total_amount - b.total_amount);
+                        break;
+                }
+            }
+            
+            // Render order table
+            function renderOrdersTable(status, orders) {
+                const tbody = document.getElementById(`${status}OrdersTable`);
+                
+                if (orders.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7">No orders found</td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tbody.innerHTML = orders.map(order => {
+                    const date = new Date(order.created_at);
+                    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                    
+                    return `
+                        <tr>
+                            <td>${order.id}</td>
+                            <td>${order.customer_name || 'Guest User'}</td>
+                            <td>¥${order.total_amount.toLocaleString()}</td>
+                            <td>${order.items_count}</td>
+                            <td>${formattedDate}</td>
+                            ${status === 'shipped' ? `<td>${order.tracking_number || '-'}</td>` : ''}
+                            <td>
+                                <button class="btn-view" onclick="viewOrder(${order.id})">View</button>
+                                ${status === 'pending' ? `<button class="btn-ship" onclick="shipOrder(${order.id})">Ship</button>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            // Render pagination
+            function renderPagination(status, pagination, currentPage) {
+                const paginationContainer = document.getElementById(`${status}-pagination`);
+                const totalPages = Math.ceil(pagination.total / pagination.per_page);
+                
+                if (totalPages <= 1) {
+                    paginationContainer.innerHTML = '';
+                    return;
+                }
+                
+                let html = '';
+                
+                // Previous button
+                if (currentPage > 1) {
+                    html += `<button onclick="loadOrders('${status}', ${currentPage - 1})">Previous</button>`;
+                }
+                
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === currentPage) {
+                        html += `<button class="active">${i}</button>`;
+                    } else {
+                        html += `<button onclick="loadOrders('${status}', ${i})">${i}</button>`;
+                    }
+                }
+                
+                // Next button
+                if (currentPage < totalPages) {
+                    html += `<button onclick="loadOrders('${status}', ${currentPage + 1})">Next</button>`;
+                }
+                
+                paginationContainer.innerHTML = html;
+            }
+            
+            // View order details
+            window.viewOrder = function(orderId) {
+                window.location.href = `order-detail.html?id=${orderId}`;
+            };
+            
+            // Ship order
+            window.shipOrder = function(orderId) {
+                if (confirm('Are you sure you want to mark this order as shipped?')) {
+                    // Simulate API call
+                    setTimeout(() => {
+                        alert('Order marked as shipped successfully');
+                        loadOrders('pending', 1);
+                    }, 1000);
+                }
+            };
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,106 @@
+<!-- Payment Page -->
+<div class="payment-container">
+    <!-- Order Information Card -->
+    <div class="payment-card order-info">
+        <h3>Order Information</h3>
+        <div class="info-list">
+            <div class="info-item">
+                <span class="info-label">Order Number:</span>
+                <span class="order-number"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Product Amount:</span>
+                <span class="products-total"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Shipping Fee:</span>
+                <span class="shipping-fee"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Discount:</span>
+                <span class="discount-amount"></span>
+            </div>
+            <div class="info-item total">
+                <span class="info-label">Total Payment:</span>
+                <span class="payment-total"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Methods Card -->
+    <div class="payment-card payment-methods">
+        <h3>Select Payment Method</h3>
+        <div class="methods-list">
+            <label class="method-item">
+                <input type="radio" name="paymentMethod" value="alipay" checked>
+                <div class="method-content">
+                    <img src="/images/payment/alipay.png" alt="Alipay">
+                    <span>Alipay</span>
+                </div>
+            </label>
+            <label class="method-item">
+                <input type="radio" name="paymentMethod" value="wechat">
+                <div class="method-content">
+                    <img src="/images/payment/wechat.png" alt="WeChat Pay">
+                    <span>WeChat Pay</span>
+                </div>
+            </label>
+            <label class="method-item">
+                <input type="radio" name="paymentMethod" value="unionpay">
+                <div class="method-content">
+                    <img src="/images/payment/unionpay.png" alt="UnionPay">
+                    <span>UnionPay</span>
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <!-- Payment Buttons -->
+    <div class="payment-actions">
+        <button class="btn-secondary" id="cancelPayment">Cancel Payment</button>
+        <button class="btn-primary" id="confirmPayment">Confirm Payment</button>
+    </div>
+</div>
+
+<!-- Payment QR Code Modal -->
+<div class="modal" id="qrcodeModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Scan to Pay</h3>
+            <button class="btn-close" id="closeQrcodeModal">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="qrcode-wrapper">
+                <div id="qrcodeImage"></div>
+                <p class="amount">$<span class="payment-amount"></span></p>
+            </div>
+            <div class="payment-tips">
+                <p>Please use <span class="payment-method-name"></span> to scan the QR code to complete payment</p>
+                <p class="expire-tip">QR code is valid for 5 minutes, please pay promptly</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" id="cancelQrcodePayment">Cancel Payment</button>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Result Modal -->
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Payment Result</h3>
+            <button class="btn-close" id="closeResultModal">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="result-icon">
+                <i class="icon-success"></i>
+            </div>
+            <h4 class="result-title">Payment Successful</h4>
+            <p class="result-desc">Your order has been paid successfully and is being processed</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-primary" id="viewOrder">View Order</button>
+        </div>
+    </div>
+</div> 

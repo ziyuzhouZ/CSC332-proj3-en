@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Details - Fashion Store</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/pages/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../js/api/admin/auth-interceptor.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="logo">
+                <img src="../../public/images/icons/logo.png" alt="Fashion Store">
+            </div>
+            <ul>
+                <li><a href="dashboard.html"><i class="icon-dashboard"></i> Dashboard</a></li>
+                <li class="active"><a href="stores.html"><i class="icon-store"></i> Stores</a></li>
+                <li><a href="sales.html"><i class="icon-chart"></i> Sales</a></li>
+                <li><a href="orders.html"><i class="icon-orders"></i> Orders</a></li>
+                <div class="divider"></div>
+                <li><a href="../index.html"><i class="icon-storefront"></i> Visit Store</a></li>
+                <li><a href="#" id="logoutBtn"><i class="icon-logout"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="admin-content">
+            <div class="store-header">
+                <a href="stores.html" class="back-link">← Back to Stores</a>
+                <h1 id="storeName">Loading...</h1>
+                <p id="storeAddress">Loading address...</p>
+            </div>
+            
+            <!-- Store Info Cards -->
+            <div class="dashboard-cards">
+                <div class="dashboard-card">
+                    <div class="card-icon stores">
+                        <i class="icon-inventory"></i>
+                    </div>
+                    <h3>Total Inventory</h3>
+                    <div class="card-value" id="totalInventory">-</div>
+                    <div class="card-meta">Items</div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-icon sales">
+                        <i class="icon-sales"></i>
+                    </div>
+                    <h3>Today's Sales</h3>
+                    <div class="card-value" id="todaySales">-</div>
+                    <div class="card-meta">Today's Sales</div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-icon orders">
+                        <i class="icon-products"></i>
+                    </div>
+                    <h3>Product Types</h3>
+                    <div class="card-value" id="productCount">-</div>
+                    <div class="card-meta">Different Products</div>
+                </div>
+            </div>
+            
+            <!-- Tab Navigation -->
+            <div class="tab-nav">
+                <button id="tab-inventory" class="active">Inventory</button>
+                <button id="tab-sales">Sales Records</button>
+                <button id="tab-info">Store Info</button>
+            </div>
+            
+            <!-- Inventory Tab Content -->
+            <div id="content-inventory" class="tab-content active">
+                <div class="filter-bar">
+                    <input type="text" id="inventorySearch" placeholder="Search products...">
+                    <select id="inventorySortBy">
+                        <option value="name">Sort by Name</option>
+                        <option value="quantity">Sort by Quantity</option>
+                        <option value="price">Sort by Price</option>
+                    </select>
+                </div>
+                
+                <div class="admin-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>SKU</th>
+                                <th>Color</th>
+                                <th>Size</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTable">
+                            <tr>
+                                <td colspan="6">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Sales Records Tab Content -->
+            <div id="content-sales" class="tab-content">
+                <div class="filter-bar">
+                    <select id="dateFilter">
+                        <option value="today">Today</option>
+                        <option value="week" selected>Last 7 Days</option>
+                        <option value="month">This Month</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                    
+                    <div id="customDateRange" style="display: none;">
+                        <input type="date" id="startDate">
+                        <input type="date" id="endDate">
+                        <button id="applyDateFilter">Apply</button>
+                    </div>
+                </div>
+                
+                <div class="admin-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Product</th>
+                                <th>SKU</th>
+                                <th>Quantity</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesTable">
+                            <tr>
+                                <td colspan="5">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Store Info Tab Content -->
+            <div id="content-info" class="tab-content">
+                <div class="store-info-card">
+                    <div class="info-section">
+                        <h3>Basic Information</h3>
+                        <table class="info-table">
+                            <tr>
+                                <th>Store Name:</th>
+                                <td id="info-name">Loading...</td>
+                            </tr>
+                            <tr>
+                                <th>Address:</th>
+                                <td id="info-address">Loading...</td>
+                            </tr>
+                            <tr>
+                                <th>City:</th>
+                                <td id="info-city">Loading...</td>
+                            </tr>
+                            <tr>
+                                <th>Province:</th>
+                                <td id="info-province">Loading...</td>
+                            </tr>
+                            <tr>
+                                <th>Postal Code:</th>
+                                <td id="info-zipcode">Loading...</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>Contact Information</h3>
+                        <table class="info-table">
+                            <tr>
+                                <th>Phone:</th>
+                                <td id="info-phone">Loading...</td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td id="info-email">Loading...</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getStoreDetails } from '../../js/modules/auth/api.js';
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Bind logout button
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_data');
+                window.location.href = 'login.html';
+            });
+            
+            // Get store ID
+            const urlParams = new URLSearchParams(window.location.search);
+            const storeId = urlParams.get('id');
+            
+            if (!storeId) {
+                alert('Store ID not provided');
+                window.location.href = 'stores.html';
+                return;
+            }
+            
+            // Tab switching
+            document.querySelectorAll('.tab-nav button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active state from all tabs
+                    document.querySelectorAll('.tab-nav button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Hide all content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Activate current tab
+                    this.classList.add('active');
+                    
+                    // Show corresponding content
+                    const contentId = 'content-' + this.id.split('-')[1];
+                    document.getElementById(contentId).classList.add('active');
+                });
+            });
+            
+            // Initial data
+            let storeData = null;
+            let inventoryData = [];
+            let salesData = [];
+            
+            // Date filter logic
+            document.getElementById('dateFilter').addEventListener('change', function() {
+                const value = this.value;
+                const customRange = document.getElementById('customDateRange');
+                
+                if (value === 'custom') {
+                    customRange.style.display = 'flex';
+                } else {
+                    customRange.style.display = 'none';
+                    loadSalesData(value);
+                }
+            });
+            
+            // Custom date range filter
+            document.getElementById('applyDateFilter').addEventListener('click', function() {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                
+                if (!startDate || !endDate) {
+                    alert('Please select both start and end dates');
+                    return;
+                }
+                
+                loadSalesData('custom', startDate, endDate);
+            });
+            
+            // Load store data
+            async function loadStoreData() {
+                try {
+                    const data = await getStoreDetails(storeId);
+                    
+                    if (!data.success) {
+                        throw new Error('Failed to fetch store data');
+                    }
+                    
+                    storeData = data.store;
+                    inventoryData = data.inventory;
+                    salesData = data.sales;
+                    
+                    // Update store header
+                    document.getElementById('storeName').textContent = storeData.name;
+                    document.getElementById('storeAddress').textContent = storeData.address;
+                    
+                    // Update info card
+                    document.getElementById('info-name').textContent = storeData.name;
+                    document.getElementById('info-address').textContent = storeData.address;
+                    document.getElementById('info-city').textContent = storeData.city;
+                    document.getElementById('info-province').textContent = storeData.province;
+                    document.getElementById('info-zipcode').textContent = storeData.zipcode;
+                    document.getElementById('info-phone').textContent = storeData.phone;
+                    document.getElementById('info-email').textContent = storeData.email;
+                    
+                    // Update dashboard cards
+                    document.getElementById('totalInventory').textContent = inventoryData.length;
+                    document.getElementById('todaySales').textContent = `¥${calculateTodaySales().toLocaleString()}`;
+                    document.getElementById('productCount').textContent = countUniqueProducts();
+                    
+                    // Render inventory table
+                    renderInventoryTable();
+                    
+                    // Load initial sales data
+                    loadSalesData('week');
+                    
+                } catch (error) {
+                    console.error('Error loading store data:', error);
+                    alert('Failed to load store data, please refresh the page');
+                }
+            }
+            
+            // Calculate today's sales
+            function calculateTodaySales() {
+                const today = new Date().toISOString().split('T')[0];
+                return salesData
+                    .filter(sale => sale.date.startsWith(today))
+                    .reduce((sum, sale) => sum + sale.amount, 0);
+            }
+            
+            // Count unique products
+            function countUniqueProducts() {
+                const uniqueProducts = new Set(inventoryData.map(item => item.product_id));
+                return uniqueProducts.size;
+            }
+            
+            // Render inventory table
+            function renderInventoryTable() {
+                const tbody = document.getElementById('inventoryTable');
+                
+                if (inventoryData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6">No inventory data available</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = inventoryData.map(item => `
+                    <tr>
+                        <td>${item.product_name}</td>
+                        <td>${item.sku}</td>
+                        <td>${item.color}</td>
+                        <td>${item.size}</td>
+                        <td>¥${item.price.toLocaleString()}</td>
+                        <td>${item.quantity}</td>
+                    </tr>
+                `).join('');
+            }
+            
+            // Load sales data
+            async function loadSalesData(period, startDate = null, endDate = null) {
+                try {
+                    let filteredSales = salesData;
+                    
+                    if (period === 'today') {
+                        const today = new Date().toISOString().split('T')[0];
+                        filteredSales = salesData.filter(sale => sale.date.startsWith(today));
+                    } else if (period === 'week') {
+                        const oneWeekAgo = new Date();
+                        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                        filteredSales = salesData.filter(sale => new Date(sale.date) >= oneWeekAgo);
+                    } else if (period === 'month') {
+                        const oneMonthAgo = new Date();
+                        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+                        filteredSales = salesData.filter(sale => new Date(sale.date) >= oneMonthAgo);
+                    } else if (period === 'custom' && startDate && endDate) {
+                        filteredSales = salesData.filter(sale => 
+                            sale.date >= startDate && sale.date <= endDate
+                        );
+                    }
+                    
+                    renderSalesTable(filteredSales);
+                    
+                } catch (error) {
+                    console.error('Error loading sales data:', error);
+                    alert('Failed to load sales data, please refresh the page');
+                }
+            }
+            
+            // Render sales table
+            function renderSalesTable(sales) {
+                const tbody = document.getElementById('salesTable');
+                
+                if (sales.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5">No sales data available</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = sales.map(sale => `
+                    <tr>
+                        <td>${sale.date}</td>
+                        <td>${sale.product_name}</td>
+                        <td>${sale.sku}</td>
+                        <td>${sale.quantity}</td>
+                        <td>¥${sale.amount.toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            }
+            
+            // Initial load
+            loadStoreData();
+        });
+    </script>
+</body>
+</html> 

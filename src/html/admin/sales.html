@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Overview - Fashion Store</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/pages/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../js/api/admin/auth-interceptor.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="logo">
+                <img src="../../public/images/icons/logo.png" alt="Fashion Store">
+            </div>
+            <ul>
+                <li><a href="dashboard.html"><i class="icon-dashboard"></i> Dashboard</a></li>
+                <li><a href="stores.html"><i class="icon-store"></i> Stores</a></li>
+                <li class="active"><a href="sales.html"><i class="icon-chart"></i> Sales</a></li>
+                <li><a href="orders.html"><i class="icon-orders"></i> Orders</a></li>
+                <div class="divider"></div>
+                <li><a href="../index.html"><i class="icon-storefront"></i> Visit Store</a></li>
+                <li><a href="#" id="logoutBtn"><i class="icon-logout"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="admin-content">
+            <h1>Sales Overview</h1>
+            
+            <!-- Period Selector -->
+            <div class="filter-bar">
+                <div class="period-selector">
+                    <label>Data Period: </label>
+                    <select id="periodSelector">
+                        <option value="day">Daily</option>
+                        <option value="week">Weekly</option>
+                        <option value="month" selected>Monthly</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Total Sales Trend Chart -->
+            <h2>Total Sales Trend</h2>
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+            </div>
+            
+            <!-- Top Products and Store Sales Ranking -->
+            <div class="flex-container">
+                <div class="flex-column">
+                    <h2>Top Selling Products TOP 10</h2>
+                    <div class="admin-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Product Name</th>
+                                    <th>Quantity Sold</th>
+                                    <th>Sales Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topProductsTable">
+                                <tr>
+                                    <td colspan="4">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="flex-column">
+                    <h2>Store Sales Ranking</h2>
+                    <div class="admin-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Store Name</th>
+                                    <th>Sales Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="storeRankingTable">
+                                <tr>
+                                    <td colspan="3">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sales Analysis Cards -->
+            <h2>Sales Analysis</h2>
+            <div class="dashboard-cards">
+                <div class="dashboard-card">
+                    <div class="card-icon sales">
+                        <i class="icon-trend"></i>
+                    </div>
+                    <h3>Sales Growth Rate</h3>
+                    <div class="card-value" id="salesGrowth">-</div>
+                    <div class="card-meta">Compared to Previous Period</div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-icon orders">
+                        <i class="icon-cart"></i>
+                    </div>
+                    <h3>Average Transaction Value</h3>
+                    <div class="card-value" id="avgTransactionValue">-</div>
+                    <div class="card-meta">Per Transaction</div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-icon stores">
+                        <i class="icon-calendar"></i>
+                    </div>
+                    <h3>Peak Sales Period</h3>
+                    <div class="card-value" id="peakSalesPeriod">-</div>
+                    <div class="card-meta">Highest Sales Volume</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getSales } from '../../js/modules/auth/api.js';
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Admin permission check disabled
+            // if (!isAdmin()) {
+            //     window.location.href = '../auth/login.html?redirect=admin';
+            //     return;
+            // }
+            
+            // Bind logout button
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_data');
+                window.location.href = 'login.html';
+            });
+            
+            // Store sales data
+            let salesData = {
+                salesData: [],
+                topProducts: [],
+                storeRanking: []
+            };
+            
+            // Initial load
+            let currentPeriod = document.getElementById('periodSelector').value;
+            await loadSalesData(currentPeriod);
+            
+            // Period selector event binding
+            document.getElementById('periodSelector').addEventListener('change', async function() {
+                currentPeriod = this.value;
+                await loadSalesData(currentPeriod);
+            });
+            
+            // Load sales data
+            async function loadSalesData(period) {
+                try {
+                    const data = await getSales(period);
+                    
+                    if (!data.success) {
+                        throw new Error('Failed to fetch sales data');
+                    }
+                    
+                    salesData = data;
+                    
+                    // Render sales trend chart
+                    renderSalesChart(salesData.salesData, period);
+                    
+                    // Render top products table
+                    renderTopProducts(salesData.topProducts);
+                    
+                    // Render store sales ranking
+                    renderStoreRanking(salesData.storeRanking);
+                    
+                    // Calculate and render sales analysis
+                    renderSalesAnalysis(salesData, period);
+                    
+                } catch (error) {
+                    console.error('Error loading sales data:', error);
+                    alert('Failed to load sales data, please refresh the page');
+                }
+            }
+            
+            // Render sales trend chart
+            function renderSalesChart(salesData, period) {
+                const labels = salesData.map(data => formatPeriodLabel(data.period, period));
+                const values = salesData.map(data => data.total_sales);
+                
+                // Destroy existing chart if it exists
+                if (window.salesChart) {
+                    window.salesChart.destroy();
+                }
+                
+                const ctx = document.getElementById('salesChart').getContext('2d');
+                window.salesChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Sales Amount (¥)',
+                            data: values,
+                            backgroundColor: 'rgba(255, 79, 79, 0.1)',
+                            borderColor: '#ff4f4f',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    drawBorder: false
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Sales: ¥${context.raw.toLocaleString()}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Format period label
+            function formatPeriodLabel(period, periodType) {
+                if (periodType === 'day') {
+                    return period; // Date format like 2023-07-01
+                } else if (periodType === 'week') {
+                    return `Week ${period}`;
+                } else if (periodType === 'month') {
+                    const [year, month] = period.split('-');
+                    return `${year}-${month}`;
+                }
+                return period;
+            }
+            
+            // Render top products table
+            function renderTopProducts(products) {
+                const tbody = document.getElementById('topProductsTable');
+                
+                if (products.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4">No data available</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = products.map((product, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${product.name}</td>
+                        <td>${product.total_quantity}</td>
+                        <td>¥${product.total_amount.toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            }
+            
+            // Render store sales ranking
+            function renderStoreRanking(stores) {
+                const tbody = document.getElementById('storeRankingTable');
+                
+                if (stores.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3">No data available</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = stores.map((store, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${store.name}</td>
+                        <td>¥${store.total_sales.toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            }
+            
+            // Render sales analysis
+            function renderSalesAnalysis(data, period) {
+                // Calculate sales growth rate
+                const salesData = data.salesData;
+                if (salesData.length >= 2) {
+                    const currentPeriodSales = salesData[salesData.length - 1].total_sales;
+                    const previousPeriodSales = salesData[salesData.length - 2].total_sales;
+                    const growthRate = ((currentPeriodSales - previousPeriodSales) / previousPeriodSales * 100).toFixed(1);
+                    document.getElementById('salesGrowth').textContent = `${growthRate}%`;
+                }
+                
+                // Calculate average transaction value
+                const totalSales = salesData.reduce((sum, data) => sum + data.total_sales, 0);
+                const totalTransactions = salesData.reduce((sum, data) => sum + data.transaction_count, 0);
+                const avgTransactionValue = totalTransactions > 0 ? totalSales / totalTransactions : 0;
+                document.getElementById('avgTransactionValue').textContent = `¥${avgTransactionValue.toLocaleString()}`;
+                
+                // Find peak sales period
+                const peakPeriod = salesData.reduce((max, data) => 
+                    data.total_sales > max.total_sales ? data : max, 
+                    salesData[0]
+                );
+                document.getElementById('peakSalesPeriod').textContent = formatPeriodLabel(peakPeriod.period, period);
+            }
+        });
+    </script>
+    
+    <style>
+        /* Additional styles, specific to sales page */
+        .flex-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .flex-column {
+            flex: 1;
+            min-width: 0; /* Prevent content overflow */
+        }
+        
+        @media (max-width: 1024px) {
+            .flex-container {
+                flex-direction: column;
+            }
+        }
+        
+        .period-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .period-selector label {
+            font-weight: 500;
+        }
+    </style>
+</body>
+</html> 
